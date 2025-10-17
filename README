@@ -1,0 +1,8 @@
+ws 项目
+
+基于 libwebsockets 构建网络应用。
+
+功能：
+- 支持服务端和客户端；
+- 支持对接 jgb::buffer 缓冲区；
+- 支持对接 sqlite 数据库。

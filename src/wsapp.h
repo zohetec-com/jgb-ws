@@ -1,0 +1,17 @@
+#ifndef WSAPP_H_20250411
+#define WSAPP_H_20250411
+
+#include "connection_callback.h"
+
+typedef struct connect_request
+{
+    std::string url;
+    connection_callback* callback;
+} connect_request_t;
+
+int request_to_connect(connect_request_t& req);
+void request_to_send(void* wsi);
+void request_to_disconnect(void* wsi);
+int get_peer_address(void* wsi, std::string& address, int port);
+
+#endif // WSAPP_H
