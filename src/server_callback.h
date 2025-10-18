@@ -4,13 +4,13 @@
 #include "connection_callback.h"
 #include <map>
 
-class server_callback_base
+class connection_callback_factory
 {
 public:
     virtual connection_callback* create(struct lws* wsi) = 0;
 };
 
-class server_callback: public server_callback_base
+class server_callback: public connection_callback_factory
 {
 public:
     connection_callback* create(struct lws* wsi) override
@@ -26,7 +26,7 @@ public:
         return nullptr;
     }
 
-    int install(const std::string& name, server_callback_base* factory)
+    int install(const std::string& name, connection_callback_factory* factory)
     {
         if(factories_.find(name) != factories_.end())
         {
@@ -43,7 +43,7 @@ public:
     }
 
 private:
-    std::map<std::string, server_callback_base*> factories_;
+    std::map<std::string, connection_callback_factory*> factories_;
 };
 
 #endif // SERVER_CALLBACK_H
