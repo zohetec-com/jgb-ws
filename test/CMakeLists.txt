@@ -1,7 +1,4 @@
-add_executable(sscli connection_callback.cpp helper.cpp sync-service-client.cpp)
-target_link_libraries(sscli jgb-core websockets boost_thread boost_chrono boost_filesystem boost_system pcre2-8 crypto ssl)
-install(TARGETS sscli)
-
-add_executable(check-setting check-setting.cpp)
-target_link_libraries(check-setting jgb-core boost_thread boost_chrono boost_filesystem boost_system pcre2-8)
-install(TARGETS check-setting)
+add_library(test-client SHARED
+    test_client_app.cpp)
+target_link_libraries(test-client)
+target_include_directories(test-client PRIVATE ../src)

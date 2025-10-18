@@ -7,5 +7,3 @@ project(
 
 add_subdirectory(src)
 add_subdirectory(test)
-#add_subdirectory(scripts)
-#add_subdirectory(client)

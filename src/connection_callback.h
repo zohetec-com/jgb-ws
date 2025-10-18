@@ -7,7 +7,7 @@
 class connection_callback
 {
 public:
-    connection_callback();
+    connection_callback(struct lws* wsi = nullptr);
     virtual ~connection_callback();
 
     virtual void on_connected() {}

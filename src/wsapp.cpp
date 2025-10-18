@@ -6,7 +6,7 @@
 #include <mutex>
 #include <set>
 #include <curl/curl.h>
-#include "monitor.h"
+#include "server_callback.h"
 
 static int callback_minimal(struct lws* wsi, enum lws_callback_reasons reason,
                             void* user, void* in, size_t len);
@@ -202,22 +202,38 @@ static int callback_minimal(struct lws* wsi, enum lws_callback_reasons reason,
         case LWS_CALLBACK_ESTABLISHED:
             {
                 add_live(wsi);
-                client* c = monitor::get_instance()->add_client(wsi);
-                lws_set_wsi_user(wsi, c);
-                c->on_connected();
+                connection_callback* cb = server_callback::get_instance()->create(wsi);
+                if(cb)
+                {
+                    lws_set_wsi_user(wsi, cb);
+                    cb->on_connected();
+                }
+                else
+                {
+                    jgb_assert(0);
+                }
             }
             break;
 
         case LWS_CALLBACK_CLOSED:
-            remove_live(wsi);
-            monitor::get_instance()->remove_client(wsi);
+            {
+                connection_callback* cb = (connection_callback*) lws_wsi_user(wsi);
+                delete cb;
+                remove_live(wsi);
+            }
             break;
 
         case LWS_CALLBACK_SERVER_WRITEABLE:
             {
-                //jgb_function();
-                client* c = (client*) lws_wsi_user(wsi);
-                c->on_send();
+                connection_callback* cb = (connection_callback*) lws_wsi_user(wsi);
+                cb->on_send();
+            }
+            break;
+
+        case LWS_CALLBACK_RECEIVE:
+            {
+                connection_callback* cb = (connection_callback*) lws_wsi_user(wsi);
+                cb->recv(in, len);
             }
             break;
 

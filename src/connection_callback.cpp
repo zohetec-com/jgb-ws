@@ -2,8 +2,8 @@
 #include <jgb/log.h>
 #include <libwebsockets.h>
 
-connection_callback::connection_callback()
-    : wsi_(nullptr),
+connection_callback::connection_callback(lws *wsi)
+    : wsi_(wsi),
     received_(0),
     print_sent_recv_(false)
 {
