@@ -1,7 +1,4 @@
 {
   "print_sent_recv": false,
-  "port": 8000,
-  "instances": [
-    {}
-  ]
+  "port": 8000
 }

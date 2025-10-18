@@ -59,7 +59,7 @@ static jgb_loop_t loop
     .exit = tsk_exit
 };
 
-jgb_api_t sync_client
+jgb_api_t test_client
 {
     .version = MAKE_API_VERSION(0, 1),
     .desc = "ws test client",

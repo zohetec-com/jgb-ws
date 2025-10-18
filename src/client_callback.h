@@ -22,15 +22,12 @@ public:
 
     client_callback(jgb::config* conf)
         : state_(state::idle),
-        server_port_(8000),
-        conf_(conf),
-        reconnect_(true)
+          conf_(conf),
+          reconnect_(true)
     {
-        conf_->get("server", server_ip_);
-        conf_->get("port", server_port_);
         conf_->create("state", (int) state_);
-        url_ = "ws://" + server_ip_ + ":" + std::to_string(server_port_);
-        jgb_info("{ server = %s, port = %d, url = %s }", server_ip_.c_str(), server_port_, url_.c_str());
+        conf_->get("url", url_);
+        jgb_info("{ url = %s }", url_.c_str());
     }
 
     void to_state(state s)
@@ -64,6 +61,13 @@ public:
     {
         if(state_ == state::idle)
         {
+            if(url_.empty())
+            {
+                jgb_warning("no url.");
+                return JGB_ERR_END;
+            }
+
+            jgb_info("connecting ... { url = %s }", url_.c_str());
             to_state(state::connecting);
 
             connect_request_t req = { url_, this };
@@ -134,8 +138,6 @@ public:
     }
 
     state state_;
-    std::string server_ip_;
-    int server_port_;
     jgb::config* conf_;
     std::string url_;
     bool reconnect_;

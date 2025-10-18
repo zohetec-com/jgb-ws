@@ -5,10 +5,15 @@
     },
     {
       "name": [
-        "wsapp",
-        "sync_client"
+        "wsapp"
       ],
-      "library":"libsync-client.so"
+      "library":"libws-app.so"
+    },
+    {
+      "name": [
+        "test_client"
+      ],
+      "library":"jgb.build/test/libtest-client.so"
     },
     {
       "name": [

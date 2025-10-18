@@ -5,10 +5,9 @@
     },
     {
       "name": [
-        "wsapp",
-        "sync_client"
+        "wsapp"
       ],
-      "library":"libsync-client.so"
+      "library":"libws-app.so"
     },
     {
       "name": [

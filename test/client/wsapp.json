@@ -1,6 +1,3 @@
 {
-  "print_sent_recv": false,
-  "instances": [
-    {}
-  ]
+  "print_sent_recv": false
 }
