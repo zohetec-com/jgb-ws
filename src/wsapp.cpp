@@ -251,9 +251,9 @@ static int tsk_init(void* worker)
     jgb_assert(w->task_);
     jgb_assert(w->task_->instance_);
     jgb_assert(!w->task_->instance_->user_);
-    jgb_assert(w->task_->instance_->conf_);
-    w->task_->instance_->conf_->get("print_sent_recv", print_sent_recv);
-    w->task_->instance_->conf_->get("iface", iface);
+
+    w->get_config()->get("print_sent_recv", print_sent_recv);
+    w->get_config()->get("iface", iface);
 
     struct lws_context_creation_info info;
     memset(&info, 0, sizeof info);
@@ -261,8 +261,8 @@ static int tsk_init(void* worker)
     {
         info.iface = iface.c_str();
     }
-    info.port = 8000;
-    w->task_->instance_->conf_->get("port", info.port);
+    info.port = CONTEXT_PORT_NO_LISTEN;
+    w->get_config()->get("port", info.port);
     jgb_info("{ iface = %s, port = %d }",
              info.iface ? info.iface : "(null)", info.port);
     info.protocols = protocols;

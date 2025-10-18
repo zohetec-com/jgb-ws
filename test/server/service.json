@@ -1,0 +1,10 @@
+{
+	"instances":[
+		{
+			"subtask":[
+				"/wsapp/instances[0]",
+				"/sync_client/instances[0]"],
+			"auto":1
+		}
+	]
+}
