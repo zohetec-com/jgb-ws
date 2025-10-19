@@ -6,7 +6,7 @@
 #include <mutex>
 #include <set>
 #include <curl/curl.h>
-#include "server_callback.h"
+#include "protocol_dispatch_callback.h"
 
 static int callback_minimal(struct lws* wsi, enum lws_callback_reasons reason,
                             void* user, void* in, size_t len);
@@ -202,7 +202,7 @@ static int callback_minimal(struct lws* wsi, enum lws_callback_reasons reason,
         case LWS_CALLBACK_ESTABLISHED:
             {
                 add_live(wsi);
-                connection_callback* cb = server_callback::get_instance()->create(wsi);
+                connection_callback* cb = protocol_dispatch_callback::get_instance()->create(wsi);
                 if(cb)
                 {
                     lws_set_wsi_user(wsi, cb);

@@ -1,11 +1,12 @@
 #include <jgb/core.h>
 #include <jgb/helper.h>
 
-#include "sqlite_callback.h"
+#include "object_callback.h"
 
 static int init(void*)
 {
-    wsobj::object_callback_dispatcher::get_instance()->install("xxx", wsobj::sqlite_callback::get_instance());
+    wsobj::protocol_dispatch_callback::get_instance()->install(
+        "ws-object", wsobj::object_dispatch_callback::get_instance());
     return 0;
 }
 

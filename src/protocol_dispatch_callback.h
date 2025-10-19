@@ -10,7 +10,7 @@ public:
     virtual connection_callback* create(struct lws* wsi) = 0;
 };
 
-class server_callback: public connection_callback_factory
+class protocol_dispatch_callback: public connection_callback_factory
 {
 public:
     connection_callback* create(struct lws* wsi) override
@@ -36,9 +36,9 @@ public:
         return 0;
     }
 
-    static server_callback* get_instance()
+    static protocol_dispatch_callback* get_instance()
     {
-        static server_callback instance;
+        static protocol_dispatch_callback instance;
         return &instance;
     }
 
