@@ -90,6 +90,37 @@ public:
         c->get("id", id);
         return id;
     }
+
+    enum class method_e
+    {
+        UNKNOWN,
+        CREATE,
+        READ,
+        UPDATE,
+        DELETE
+    };
+
+    enum method_e get_method()
+    {
+        std::string m = method();
+        if(m == "create")
+        {
+            return method_e::CREATE;
+        }
+        else if(m == "read")
+        {
+            return method_e::READ;
+        }
+        else if(m == "update")
+        {
+            return method_e::UPDATE;
+        }
+        else if(m == "delete")
+        {
+            return method_e::DELETE;
+        }
+        return method_e::UNKNOWN;
+    }
 };
 
 class response: public message
@@ -106,6 +137,11 @@ public:
     void ok()
     {
         c->set("status", 200);
+    }
+
+    void not_implemented()
+    {
+        c->set("status", 501);
     }
 };
 
