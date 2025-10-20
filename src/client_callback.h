@@ -26,6 +26,7 @@ public:
           reconnect_(true)
     {
         conf_->create("state", (int) state_);
+        conf_->get("protocol", protocol_);
         conf_->get("url", url_);
         jgb_info("{ url = %s }", url_.c_str());
     }
@@ -70,7 +71,7 @@ public:
             jgb_info("connecting ... { url = %s }", url_.c_str());
             to_state(state::connecting);
 
-            connect_request_t req = { url_, this };
+            connect_request_t req = { protocol_, url_, this };
             int r;
             r = request_to_connect(req);
             if(!r)
@@ -139,6 +140,7 @@ public:
 
     state state_;
     jgb::config* conf_;
+    std::string protocol_;
     std::string url_;
     bool reconnect_;
 };

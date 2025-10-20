@@ -2,11 +2,13 @@
 #define OBJECT_CALLBACK_H
 
 #include <jgb/config.h>
+#include <jgb/config_factory.h>
 #include "connection_callback.h"
-#include "server_callback.h"
+#include "protocol_dispatch_callback.h"
 #include <map>
 #include <list>
 #include <chrono>
+#include "wsapp.h"
 
 namespace wsobj
 {
@@ -81,14 +83,12 @@ public:
     {
     }
 
-    void on_recv(void *in, int len) override
-    {
-        object_dispatch_callback::get_instance()->process(*this, in, len);
-    }
+    void on_recv(void *in, int len) override;
 
     void on_send() override
     {
-        std::shared_ptr<response> resp = resps_.pop_front();
+        std::shared_ptr<response> resp = resps_.front();
+        resps_.pop_front();
         std::string str = resp->c->to_string();
         send(str);
     }
@@ -131,10 +131,11 @@ public:
     int process(connection_context &ctx, void* in, int len)
     {
         request req(in, len);
-        std::shared_ptr<response*> resp = std::make_shared<response>();
+        std::shared_ptr<response> resp = std::make_shared<response>();
+        // https://stackoverflow.com/questions/13575821/how-to-get-a-reference-to-an-object-having-shared-ptr-to-it
         int r = process(ctx, req, *resp);
-        ctx.resps_.push_back(*resp);
-        request_to_send(wsi_);
+        ctx.resps_.push_back(resp);
+        request_to_send(ctx.wsi_);
         return r;
     }
 

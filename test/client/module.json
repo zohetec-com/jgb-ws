@@ -13,7 +13,7 @@
       "name": [
         "test_client"
       ],
-      "library":"jgb.build/test/libtest-client.so"
+      "library":"jgb.build/test/client/libtest-client.so"
     },
     {
       "name": [

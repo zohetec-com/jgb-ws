@@ -2,7 +2,11 @@
 #define SERVER_CALLBACK_H
 
 #include "connection_callback.h"
+#include <libwebsockets.h>
 #include <map>
+
+namespace wsobj
+{
 
 class connection_callback_factory
 {
@@ -15,9 +19,9 @@ class protocol_dispatch_callback: public connection_callback_factory
 public:
     connection_callback* create(struct lws* wsi) override
     {
-        const char* name = lws_get_protocol(wsi)->name;
-        jgb_debug("{ protocol = %s }", name);
-        auto it = factories_.find(name);
+        const char* protocol = lws_get_protocol(wsi)->name;
+        jgb_debug("{ protocol = %s }", protocol);
+        auto it = factories_.find(protocol);
         if(it != factories_.end())
         {
             return it->second->create(wsi);
@@ -26,13 +30,13 @@ public:
         return nullptr;
     }
 
-    int install(const std::string& name, connection_callback_factory* factory)
+    int install(const std::string& protocol, connection_callback_factory* factory)
     {
-        if(factories_.find(name) != factories_.end())
+        if(factories_.find(protocol) != factories_.end())
         {
             return 1;
         }
-        factories_[name] = factory;
+        factories_[protocol] = factory;
         return 0;
     }
 
@@ -45,5 +49,7 @@ public:
 private:
     std::map<std::string, connection_callback_factory*> factories_;
 };
+
+}
 
 #endif // SERVER_CALLBACK_H

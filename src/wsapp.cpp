@@ -202,7 +202,7 @@ static int callback_minimal(struct lws* wsi, enum lws_callback_reasons reason,
         case LWS_CALLBACK_ESTABLISHED:
             {
                 add_live(wsi);
-                connection_callback* cb = protocol_dispatch_callback::get_instance()->create(wsi);
+            connection_callback* cb = wsobj::protocol_dispatch_callback::get_instance()->create(wsi);
                 if(cb)
                 {
                     lws_set_wsi_user(wsi, cb);
@@ -331,7 +331,8 @@ static void to_connect()
                                 jgb_info("{ host = \"%s\", port = \"%s\", path = \"%s\", query = \"%s\", path_q = \"%s\" }",
                                          host, port, path, q, path_q.c_str());
 #endif
-                                jgb_info("{ host = \"%s\", port = \"%s\", path = \"%s\" }",
+                                jgb_info("{ protocol = \"%s\", host = \"%s\", port = \"%s\", path = \"%s\" }",
+                                         i.protocol.c_str(),
                                          host, port, path);
                                 struct lws_client_connect_info info = {};
                                 info.context = context;
@@ -340,8 +341,7 @@ static void to_connect()
                                 info.host = host;
                                 info.origin = host;
                                 info.path = path;
-                                // TODO: no protocol ?
-                                info.protocol = "lws-minimal-client";
+                                info.protocol = i.protocol.c_str();
                                 info.userdata = (void*)i.callback;
                                 info.retry_and_idle_policy = &retry;
                                 struct lws* wsi = lws_client_connect_via_info(&info);

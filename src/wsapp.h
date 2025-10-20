@@ -5,6 +5,7 @@
 
 typedef struct connect_request
 {
+    std::string protocol;
     std::string url;
     connection_callback* callback;
 } connect_request_t;

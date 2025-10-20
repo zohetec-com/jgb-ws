@@ -1,6 +1,6 @@
 #include <jgb/core.h>
 #include <jgb/helper.h>
-#include "test_client.h"
+#include "test-client.h"
 
 struct context_93f37fdfc071
 {

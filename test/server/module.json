@@ -11,6 +11,12 @@
     },
     {
       "name": [
+        "test_server"
+      ],
+      "library":"jgb.build/test/server/libtest-server.so"
+    },
+    {
+      "name": [
 	"service"
       ],
       "library":"libjgb-misc.so"
