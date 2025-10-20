@@ -259,7 +259,7 @@ static int tsk_init(void* worker)
         protocols = new lws_protocols[wsobj::protocol_dispatch_callback::get_instance()->factories_.size() + 1];
         for(auto it: wsobj::protocol_dispatch_callback::get_instance()->factories_)
         {
-            protocols[i].name = it.first.c_str();
+            protocols[i].name = strdup(it.first.c_str());
             protocols[i].callback = callback_minimal;
             protocols[i].per_session_data_size = 0;
             protocols[i].rx_buffer_size = 0;
@@ -484,7 +484,7 @@ static int init(void*)
     retry.secs_since_valid_ping = 6;
     retry.secs_since_valid_hangup = 10;
 
-    lws_set_log_level(LLL_ERR|LLL_WARN|LLL_NOTICE|LLL_INFO|LLL_DEBUG, nullptr);
+    //lws_set_log_level(LLL_ERR|LLL_WARN|LLL_NOTICE|LLL_INFO|LLL_DEBUG, nullptr);
 
     return 0;
 }

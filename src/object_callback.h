@@ -66,11 +66,13 @@ public:
         c = new jgb::config;
         c->create("status", status);
         c->create("time", get_timestamp_us());
+        jgb_debug("new response { %p }", this);
     }
 
     void ok()
     {
         c->set("status", 200);
+        jgb_debug("free response { %p }", this);
     }
 };
 
@@ -87,10 +89,16 @@ public:
 
     void on_send() override
     {
-        std::shared_ptr<response> resp = resps_.front();
-        resps_.pop_front();
-        std::string str = resp->c->to_string();
-        send(str);
+        jgb_mark();
+        if(!resps_.empty())
+        {
+            std::shared_ptr<response> resp = resps_.front();
+            resps_.pop_front();
+            jgb_mark();
+            std::string str = resp->c->to_string();
+            jgb_debug("{ str = %s, len = %u }", str.c_str(), str.length());
+            send(str);
+        }
     }
 
     std::list<std::shared_ptr<response>> resps_;
