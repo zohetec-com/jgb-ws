@@ -6,9 +6,9 @@
 class hello_object_callback: public wsobj::object_callback
 {
 public:
-    int process(wsobj::connection_context&, wsobj::request&, wsobj::response& resp) override
+    int process(wsobj::connection_context&, wsobj::request& req, wsobj::response& resp) override
     {
-        jgb_mark();
+        jgb_debug("%s", req.to_string().c_str());
         resp.ok();
         return 0;
     }

@@ -1,80 +1,15 @@
 #ifndef OBJECT_CALLBACK_H
 #define OBJECT_CALLBACK_H
 
-#include <jgb/config.h>
-#include <jgb/config_factory.h>
 #include "connection_callback.h"
 #include "protocol_dispatch_callback.h"
 #include <map>
 #include <list>
-#include <chrono>
 #include "wsapp.h"
+#include "message.h"
 
 namespace wsobj
 {
-
-// https://gist.github.com/dtoma/cc3d5b2dd4c03a25886adededcc1e3b9
-static int64_t get_timestamp_us()
-{
-    auto now = std::chrono::high_resolution_clock::now();
-    auto epoch = now.time_since_epoch();
-    auto us = std::chrono::duration_cast<std::chrono::microseconds>(epoch).count();
-    return us;
-}
-
-class request
-{
-public:
-    request(void* in, int len)
-    {
-        c = jgb::config_factory::create((char*) in, len);
-        if(!c)
-        {
-            c = new jgb::config;
-        }
-    }
-
-    ~request()
-    {
-        delete c;
-    }
-
-    jgb::config* c;
-
-    std::string object()
-    {
-        std::string o;
-        c->get("object", o);
-        return o;
-    }
-
-    std::string method()
-    {
-        std::string m;
-        c->get("method", m);
-        return m;
-    }
-};
-
-class response
-{
-public:
-    jgb::config* c;
-
-    response(int status = 0)
-    {
-        c = new jgb::config;
-        c->create("status", status);
-        c->create("time", get_timestamp_us());
-        jgb_debug("new response { %p }", this);
-    }
-
-    void ok()
-    {
-        c->set("status", 200);
-        jgb_debug("free response { %p }", this);
-    }
-};
 
 class object_dispatch_callback;
 
@@ -89,12 +24,10 @@ public:
 
     void on_send() override
     {
-        jgb_mark();
         if(!resps_.empty())
         {
             std::shared_ptr<response> resp = resps_.front();
             resps_.pop_front();
-            jgb_mark();
             std::string str = resp->c->to_string();
             jgb_debug("{ str = %s, len = %u }", str.c_str(), str.length());
             send(str);

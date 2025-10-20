@@ -467,6 +467,10 @@ static void tsk_exit(void*)
     to_send_set.clear();
     to_disconnect_set.clear();
     live_set.clear();
+    for(uint i=0; i<wsobj::protocol_dispatch_callback::get_instance()->factories_.size(); i++)
+    {
+        free((void*)protocols[i].name);
+    }
     delete[] protocols;
 }
 
