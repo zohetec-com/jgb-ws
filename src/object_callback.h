@@ -72,7 +72,7 @@ public:
     int process(connection_context &ctx, void* in, int len)
     {
         request req(in, len);
-        std::shared_ptr<response> resp = std::make_shared<response>();
+        std::shared_ptr<response> resp = std::shared_ptr<response>(new response(req.id()));
         std::string o = req.object();
         auto it = callbacks_.find(o);
         int r;

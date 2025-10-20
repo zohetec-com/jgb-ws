@@ -21,7 +21,7 @@ static int64_t get_timestamp_us()
 class message
 {
 public:
-    message(void* in = nullptr, int len = 0)
+    message(void* in = nullptr, int len = 0, int64_t id=0L)
         : c(nullptr)
     {
         if(in && len)
@@ -33,7 +33,7 @@ public:
             c = new jgb::config;
         }
         c->create("time", get_timestamp_us());
-        c->create("id", 0);
+        c->create("id", id);
     }
 
     virtual ~message()
@@ -58,11 +58,12 @@ public:
     {
     }
 
-    request(const std::string& o, const std::string& m)
+    request(const std::string& o, const std::string& m, int64_t id)
     : message()
     {
         c->create("object", o);
         c->create("method", m);
+        c->set("id", id);
     }
 
     ~request()
@@ -82,14 +83,21 @@ public:
         c->get("method", m);
         return m;
     }
+
+    int64_t id()
+    {
+        int64_t id = 0L;
+        c->get("id", id);
+        return id;
+    }
 };
 
 class response: public message
 {
 public:
 
-    response(int status = 0)
-        : message()
+    response(int64_t id, int status = 0)
+        : message(nullptr, 0, id)
     {
         c->create("status", status);
         //jgb_debug("new response { %p }", this);

@@ -58,6 +58,11 @@ public:
         jgb_warning("connection error. { url = %s }", url_.c_str());
     }
 
+    virtual void on_session()
+    {
+        jgb::sleep(1000);
+    }
+
     virtual int process()
     {
         if(state_ == state::idle)
@@ -93,8 +98,7 @@ public:
         }
         else if(state_ == state::connected)
         {
-            //jgb_debug("connected.");
-            jgb::sleep(1000);
+            on_session();
         }
         else if(state_ == state::aborting)
         {
