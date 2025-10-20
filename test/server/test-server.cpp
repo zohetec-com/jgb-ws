@@ -17,7 +17,7 @@ static int init(void*)
 jgb_api_t test_server
 {
     .version = MAKE_API_VERSION(0, 1),
-    .desc = "sqlite object app",
+    .desc = "test ws object",
     .init = init,
     .release = nullptr,
     .create = nullptr,

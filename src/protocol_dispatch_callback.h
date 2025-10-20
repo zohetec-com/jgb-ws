@@ -14,10 +14,10 @@ public:
     virtual connection_callback* create(struct lws* wsi) = 0;
 };
 
-class protocol_dispatch_callback: public connection_callback_factory
+class protocol_dispatch_callback
 {
 public:
-    connection_callback* create(struct lws* wsi) override
+    connection_callback* create(struct lws* wsi)
     {
         const char* protocol = lws_get_protocol(wsi)->name;
         jgb_debug("{ protocol = %s }", protocol);
@@ -46,7 +46,6 @@ public:
         return &instance;
     }
 
-private:
     std::map<std::string, connection_callback_factory*> factories_;
 };
 

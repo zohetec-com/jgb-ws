@@ -19,10 +19,6 @@ struct connect_request_cmp
     }
 };
 
-static const struct lws_protocols protocols[] = {
-    { "lws-minimal-client", callback_minimal, 0, 0, 0, NULL, 0 },
-    LWS_PROTOCOL_LIST_TERM
-};
 static struct lws_context *context = nullptr;
 static std::set<connect_request_t,connect_request_cmp> to_connect_set;
 static std::set<void*> to_send_set;
@@ -32,6 +28,7 @@ static std::mutex mutex;
 static lws_retry_bo_t retry = {};
 static bool print_sent_recv = false;
 static std::string iface;
+struct lws_protocols *protocols = nullptr;
 
 int get_peer_address(void* wsi, std::string& address, int)
 {
@@ -252,6 +249,51 @@ static int tsk_init(void* worker)
     jgb_assert(w->task_->instance_);
     jgb_assert(!w->task_->instance_->user_);
 
+    jgb_assert(!protocols);
+
+    jgb_debug("factories %d", wsobj::protocol_dispatch_callback::get_instance()->factories_.size());
+
+    uint i = 0;
+    if(wsobj::protocol_dispatch_callback::get_instance()->factories_.size() > 0)
+    {
+        protocols = new lws_protocols[wsobj::protocol_dispatch_callback::get_instance()->factories_.size() + 1];
+        for(auto it: wsobj::protocol_dispatch_callback::get_instance()->factories_)
+        {
+            protocols[i].name = it.first.c_str();
+            protocols[i].callback = callback_minimal;
+            protocols[i].per_session_data_size = 0;
+            protocols[i].rx_buffer_size = 0;
+            protocols[i].id = 0;
+            protocols[i].user = nullptr;
+            protocols[i].tx_packet_size = 0;
+
+            jgb_debug("{ i = %d, protocol = %s }", i, protocols[i].name);
+
+            i++;
+        }
+        //jgb_assert(0);
+    }
+    else
+    {
+        protocols = new lws_protocols[2];
+        protocols[i].name = "ws-object";
+        protocols[i].callback = callback_minimal;
+        protocols[i].per_session_data_size = 0;
+        protocols[i].rx_buffer_size = 0;
+        protocols[i].id = 0;
+        protocols[i].user = nullptr;
+        protocols[i].tx_packet_size = 0;
+        i++;
+    }
+
+    protocols[i].name = nullptr;
+    protocols[i].callback = nullptr;
+    protocols[i].per_session_data_size = 0;
+    protocols[i].rx_buffer_size = 0;
+    protocols[i].id = 0;
+    protocols[i].user = nullptr;
+    protocols[i].tx_packet_size = 0;
+
     w->get_config()->get("print_sent_recv", print_sent_recv);
     w->get_config()->get("iface", iface);
 
@@ -425,6 +467,7 @@ static void tsk_exit(void*)
     to_send_set.clear();
     to_disconnect_set.clear();
     live_set.clear();
+    delete[] protocols;
 }
 
 static loop_ptr_t loops[] = { tsk_loop, nullptr };
@@ -440,6 +483,8 @@ static int init(void*)
 {
     retry.secs_since_valid_ping = 6;
     retry.secs_since_valid_hangup = 10;
+
+    lws_set_log_level(LLL_ERR|LLL_WARN|LLL_NOTICE|LLL_INFO|LLL_DEBUG, nullptr);
 
     return 0;
 }

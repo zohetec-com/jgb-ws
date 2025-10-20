@@ -103,7 +103,7 @@ public:
     int priority;
 };
 
-class object_dispatch_callback: public connection_callback_factory, public object_callback
+class object_dispatch_callback: public connection_callback_factory
 {
 public:
 
@@ -132,30 +132,23 @@ public:
     {
         request req(in, len);
         std::shared_ptr<response> resp = std::make_shared<response>();
-        // https://stackoverflow.com/questions/13575821/how-to-get-a-reference-to-an-object-having-shared-ptr-to-it
-        int r = process(ctx, req, *resp);
-        ctx.resps_.push_back(resp);
-        request_to_send(ctx.wsi_);
-        return r;
-    }
-
-    int process(connection_context &ctx, request &req, response &resp) override
-    {
         std::string o = req.object();
-
         auto it = callbacks_.find(o);
+        int r;
         if(it != callbacks_.end())
         {
             for(auto cb : it->second)
             {
-                int ret = cb->process(ctx, req, resp);
-                if(ret != 0)
+                // https://stackoverflow.com/questions/13575821/how-to-get-a-reference-to-an-object-having-shared-ptr-to-it
+                r = cb->process(ctx, req, *resp);
+                if(r != 0)
                 {
-                    return ret;
+                    break;
                 }
             }
         }
-
+        ctx.resps_.push_back(resp);
+        request_to_send(ctx.wsi_);
         return 0;
     }
 
