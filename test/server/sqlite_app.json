@@ -1,0 +1,10 @@
+{
+  "instances": [
+    {
+      "filename": "/home/hzm/work/jgb-ws/test/server/server.db",
+      "tables": [
+        "places"
+      ]
+    }
+  ]
+}

@@ -40,6 +40,7 @@ public:
 class object_callback
 {
 public:
+    virtual ~object_callback(){};
     virtual int process(connection_context& ctx, request& req, response& resp) = 0;
     int priority;
 };

@@ -143,6 +143,11 @@ public:
     {
         c->set("status", 501);
     }
+
+    void status(int code)
+    {
+        c->set("status", code);
+    }
 };
 
 }

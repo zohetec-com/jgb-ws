@@ -1,7 +1,7 @@
 {
   "import": [
     {
-      "library":["libwebsockets.so", "libcurl.so"]
+      "library":["libwebsockets.so", "libcurl.so", "libsqlite3.so"]
     },
     {
       "name": [
@@ -14,6 +14,12 @@
         "test_server"
       ],
       "library":"jgb.build/test/server/libtest-server.so"
+    },
+    {
+      "name": [
+        "sqlite_app"
+      ],
+      "library":"libsqlite-app.so"
     },
     {
       "name": [

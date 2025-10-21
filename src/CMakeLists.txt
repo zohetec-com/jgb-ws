@@ -1,5 +1,7 @@
 add_library(ws-app SHARED
-    connection_callback.cpp
     object_callback.cpp
+    connection_callback.cpp
     wsapp.cpp)
-install(TARGETS ws-app)
+add_library(sqlite-app SHARED
+    sqlite-app.cpp)
+install(TARGETS ws-app sqlite-app)
