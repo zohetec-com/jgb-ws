@@ -15,21 +15,54 @@ public:
     {
     }
 
+    int exec_sql(const std::string& sql)
+    {
+        jgb_debug("{ sql = %s }", sql.c_str());
+
+        sqlite3 *db;
+        int r;
+        r = sqlite3_open(filename_.c_str(), &db);
+        if (r != SQLITE_OK)
+        {
+            jgb_fail("Cannot open database: %s", sqlite3_errmsg(db));
+            return JGB_ERR_FAIL;
+        }
+        char *errMsg = 0;
+        r = sqlite3_exec(db, sql.c_str(), 0, 0, &errMsg);
+        if (r != SQLITE_OK)
+        {
+            jgb_fail("SQL error: %s", errMsg);
+            sqlite3_free(errMsg);
+            sqlite3_close(db);
+            return JGB_ERR_FAIL;
+        }
+        sqlite3_close(db);
+        return 0;\
+    }
+
     int process(connection_context&, request& req, response& resp) override
     {
+        jgb_debug("{ method = %d }", req.get_method());
         switch (req.get_method())
         {
             case request::method_e::READ:
             {
-                read_db(req.object(), resp);
+                read(req.object(), resp);
                 return 0;
             }
             case request::method_e::CREATE:
+            {
+                create(req, resp);
+                return 0;
+            }
             case request::method_e::UPDATE:
+            {
+                update(req, resp);
+                return 0;
+            }
             case request::method_e::DELETE:
             {
-                // Implement your SQLite write logic here
-                resp.ok();
+                delete_(req, resp);
                 return 0;
             }
             default:
@@ -42,7 +75,172 @@ public:
 
 private:
 
-    int read_db(const std::string& table, wsobj::response& resp)
+    int delete_(wsobj::request& req, wsobj::response& resp)
+    {
+        jgb_mark();
+        int r;
+        jgb::value* val;
+        r = req.c->get("data", &val);
+        if(!r && val->len_ > 0)
+        {
+            std::ostringstream os;
+            for(int i=0; i<val->len_; i++)
+            {
+                jgb::config* obj = val->conf_[i];
+                jgb::value* id_val;
+                r = obj->get("id", &id_val);
+                if(!r)
+                {
+                    os << "DELETE FROM " << req.object() << " WHERE id = ";
+                    if(id_val->type_ == jgb::value::data_type::integer)
+                    {
+                        os << id_val->int64() << ";";
+                    }
+                    else if(id_val->type_ == jgb::value::data_type::string)
+                    {
+                        os << "'" << id_val->str() << "';";
+                    }
+                    else
+                    {
+                        jgb_assert(0);
+                    }
+                }
+                else
+                {
+                    jgb_assert(0);
+                }
+            }
+            std::string sql = os.str();
+            exec_sql(sql);
+        }
+        resp.ok();
+        jgb_mark();
+        return 0;
+    }
+
+    int create(wsobj::request& req, wsobj::response& resp)
+    {
+        int r;
+        jgb::value* val;
+        r = req.c->get("data", &val);
+        // todo: 使用 schema 检查 req。
+        if(!r && val->len_ > 0)
+        {
+            std::ostringstream os;
+            for(int i=0; i<val->len_; i++)
+            {
+                os << "INSERT INTO " << req.object() << " (";
+                jgb::config* obj = val->conf_[i];
+                int n = 0;
+                std::ostringstream cols;
+                std::ostringstream vals;
+                for(auto& pr: obj->pair_)
+                {
+                    if(n > 0)
+                    {
+                        cols << ", ";
+                        vals << ", ";
+                    }
+                    cols << pr->name_;
+                    switch(pr->value_->type_)
+                    {
+                        case jgb::value::data_type::string:
+                        vals << "'" << pr->value_->str() << "'";
+                            break;
+                        case jgb::value::data_type::integer:
+                            vals << pr->value_->int64();
+                            break;
+                        case jgb::value::data_type::real:
+                            vals << pr->value_->real();
+                            break;
+                        default:
+                            jgb_assert(0);
+                            break;
+                    }
+                    ++ n;
+                }
+                os << cols.str() << ") VALUES (" << vals.str() << ");";
+            }
+            std::string sql = os.str();
+            exec_sql(sql);
+        }
+        resp.ok();
+        return 0;
+    }
+
+    int update(wsobj::request& req, wsobj::response& resp)
+    {
+        int r;
+        jgb::value* val;
+        r = req.c->get("data", &val);
+        // todo: 使用 schema 检查 req。
+        if(!r && val->len_ > 0)
+        {
+            std::ostringstream os;
+            os << "UPDATE " << req.object() << " SET ";
+            for(int i=0; i<val->len_; i++)
+            {
+                jgb::config* obj = val->conf_[i];
+                jgb::value* id_val;
+                r = obj->get("id", &id_val);
+                if(!r)
+                {
+                    int n = 0;
+                    for(auto& pr: obj->pair_)
+                    {
+                        if(strcmp(pr->name_, "id"))
+                        {
+                            if(n > 0)
+                            {
+                                os << ", ";
+                            }
+                            os << pr->name_ << " = ";
+                            switch(pr->value_->type_)
+                            {
+                                case jgb::value::data_type::string:
+                                os << "'" << pr->value_->str() << "'";
+                                    break;
+                                case jgb::value::data_type::integer:
+                                    os << pr->value_->int64();
+                                    break;
+                                case jgb::value::data_type::real:
+                                    os << pr->value_->real();
+                                    break;
+                                default:
+                                    jgb_assert(0);
+                                    break;
+                            }
+                            ++ n;
+                        }
+                    }
+                    os << " WHERE id = ";
+                    if(id_val->type_ == jgb::value::data_type::integer)
+                    {
+                        os << id_val->int64() << ";";
+                    }
+                    else if(id_val->type_ == jgb::value::data_type::string)
+                    {
+                        os << "'" << id_val->str() << "';";
+                    }
+                    else
+                    {
+                        jgb_assert(0);
+                    }
+                    std::string sql = os.str();
+                    exec_sql(sql);
+                }
+                else
+                {
+                    jgb_warning("no id");
+                }
+            }
+        }
+
+        resp.ok();
+        return 0;
+    }
+
+    int read(const std::string& table, wsobj::response& resp)
     {
         std::string sql = "SELECT * FROM " + table + ";";
         std::list<jgb::config*> res;

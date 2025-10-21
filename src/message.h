@@ -134,6 +134,11 @@ public:
         //jgb_debug("new response { %p }", this);
     }
 
+    response(void* in, int len)
+        : message(in, len)
+    {
+    }
+
     void ok()
     {
         c->set("status", 200);
@@ -147,6 +152,11 @@ public:
     void status(int code)
     {
         c->set("status", code);
+    }
+
+    int status()
+    {
+        return c->int64("status");
     }
 };
 
