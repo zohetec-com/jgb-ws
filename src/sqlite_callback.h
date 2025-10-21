@@ -103,6 +103,7 @@ private:
             int idx = 0;
             for(auto i: res)
             {
+                delete val->conf_[idx];
                 val->conf_[idx] = i;
                 val->conf_[idx]->id_ = idx;
                 val->conf_[idx]->uplink_ = val;
@@ -119,6 +120,7 @@ private:
         }
 
         sqlite3_finalize(stmt);
+        sqlite3_close(db);
 
         return r;
     }
