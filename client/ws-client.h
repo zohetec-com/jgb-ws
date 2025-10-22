@@ -26,8 +26,18 @@ public:
     {
         if(sent_)
         {
-            ws::request req("places", "read", 0);
-            send(req);
+            if(!req_)
+            {
+                if(req_str_)
+                {
+                    req_ = new ws::request((char*)req_str_, strlen(req_str_));
+                }
+            }
+
+            if(req_)
+            {
+                send(*req_);
+            }
             sent_ = false;
         }
     }
@@ -39,14 +49,18 @@ public:
 
     ws_client(jgb::config* conf)
         : client_callback(conf),
+        interval_(1000),
         sent_(false),
-        interval_(1000)
+        req_(nullptr)
     {
     }
 
+    static const char* req_str_;
+    int interval_; // ms
+
 private:
     bool sent_;
-    int interval_; // ms
+    ws::request* req_;
 };
 
 #endif // TEST_CLIENT_H

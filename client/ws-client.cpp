@@ -2,6 +2,8 @@
 #include <jgb/helper.h>
 #include "ws-client.h"
 
+const char* ws_client::req_str_ = nullptr;
+
 struct context_24e8546255cf
 {
     ws_client* client;

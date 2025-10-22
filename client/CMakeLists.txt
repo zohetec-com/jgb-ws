@@ -3,5 +3,5 @@ add_executable(wscli
     ws-client.cpp
     wsapp.cpp
     connection_callback.cpp)
-target_link_libraries(wscli jgb-core websockets curl boost_thread boost_chrono boost_filesystem boost_system pcre2-8 crypto ssl)
+target_link_libraries(wscli websockets curl jgb-core jansson)
 install(TARGETS wscli)
