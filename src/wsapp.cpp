@@ -253,6 +253,8 @@ static int tsk_init(void* worker)
 
     jgb_debug("factories %d", ws::protocol_dispatch_callback::get_instance()->factories_.size());
 
+    w->task_->send_kill_ = true;
+
     uint i = 0;
     if(ws::protocol_dispatch_callback::get_instance()->factories_.size() > 0)
     {
