@@ -276,7 +276,7 @@ static int tsk_init(void* worker)
     else
     {
         protocols = new lws_protocols[2];
-        protocols[i].name = "ws-object";
+        protocols[i].name = "ws-sync";
         protocols[i].callback = callback_minimal;
         protocols[i].per_session_data_size = 0;
         protocols[i].rx_buffer_size = 0;
