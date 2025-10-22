@@ -49,14 +49,18 @@ public:
 
     ws_client(jgb::config* conf)
         : client_callback(conf),
-        interval_(1000),
         sent_(false),
         req_(nullptr)
     {
     }
 
+    ~ws_client()
+    {
+        delete req_;
+    }
+
     static const char* req_str_;
-    int interval_; // ms
+    static int interval_; // ms
 
 private:
     bool sent_;

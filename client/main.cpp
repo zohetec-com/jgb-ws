@@ -88,8 +88,9 @@ int main(int argc, char *argv[])
     json_t* jcur = jreq;
     const char* key = nullptr;
     jgb_assert(jreq);
+    double interval = 1.0;
 
-    while ((opt = getopt_long(argc, argv, "A::dh:i:I:K:m:O::o:p:T:Uv:", long_options, &long_index)) != -1) {
+    while ((opt = getopt_long(argc, argv, "A::dh:i:I:K:m:O::o:p:t:T:Uv:", long_options, &long_index)) != -1) {
         switch (opt) {
         case 0: // This case is for long options that don't have a short option equivalent
             jgb_debug("{ index = %d, opt = %s }", long_index, long_options[long_index].name);
@@ -103,6 +104,9 @@ int main(int argc, char *argv[])
             break;
         case 'p':
             port = optarg;
+            break;
+        case 't':
+            jgb::stod(optarg, interval);
             break;
         case 'v':
             jgb::stoi(optarg, jgb_print_level);
@@ -288,6 +292,9 @@ int main(int argc, char *argv[])
             break;
         }
     }
+
+    jgb_info("{ interval = %f }", interval);
+    ws_client::interval_ = interval * 1000;
 
     char* jreq_str = json_dumps(jreq, JSON_COMPACT);
     jgb_debug("%s", jreq_str);
