@@ -6,7 +6,7 @@
 #include <jgb/log.h>
 #include <jgb/config_factory.h>
 
-namespace wsobj
+namespace ws
 {
 
 // https://gist.github.com/dtoma/cc3d5b2dd4c03a25886adededcc1e3b9

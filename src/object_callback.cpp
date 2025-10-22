@@ -1,6 +1,6 @@
 #include "object_callback.h"
 
-namespace wsobj
+namespace ws
 {
 
 void connection_context::on_recv(void *in, int len)

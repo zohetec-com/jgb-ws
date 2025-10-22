@@ -16,7 +16,7 @@ public:
         request_to_send(wsi_);
     }
 
-    void send(wsobj::request& req)
+    void send(ws::request& req)
     {
         std::string str = req.to_string();
         client_callback::send(str);
@@ -33,7 +33,7 @@ public:
                 case 8:
                 case 12:
                 {
-                    wsobj::request req("places", "read", id_++);
+                    ws::request req("places", "read", id_++);
                     send(req);
                     ++ step_;
                 }
@@ -42,7 +42,7 @@ public:
                 {
                     if(place_ids_.size() > 0)
                     {
-                        wsobj::request req("places", "delete", id_++);
+                        ws::request req("places", "delete", id_++);
                         jgb::value* val = new jgb::value(jgb::value::data_type::object, place_ids_.size(), true);
                         int idx = 0;
                         for(auto i: place_ids_)
@@ -62,7 +62,7 @@ public:
                 break;
             case 6:
                 {
-                    wsobj::request req("places", "create", id_++);
+                    ws::request req("places", "create", id_++);
                     jgb::value* val = new jgb::value(jgb::value::data_type::object, 2, true);
                     val->conf_[0]->create("id", 1);
                     val->conf_[0]->create("name", "海淀");
@@ -75,7 +75,7 @@ public:
                 break;
             case 10:
                 {
-                    wsobj::request req("places", "update", id_++);
+                    ws::request req("places", "update", id_++);
                     jgb::value* val = new jgb::value(jgb::value::data_type::object, 1, true);
                     val->conf_[0]->create("id", 1);
                     val->conf_[0]->create("name", "朝阳");
@@ -92,7 +92,7 @@ public:
     virtual void on_recv(void *in, int len)
     {
         jgb_raw("%.*s\n", len, (char*)in);
-        wsobj::response resp(in, len);
+        ws::response resp(in, len);
         jgb_assert(resp.status() == 200);
         if(step_ == 1)
         {

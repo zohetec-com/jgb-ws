@@ -6,7 +6,7 @@
 #include <libwebsockets.h>
 #include <map>
 
-namespace wsobj
+namespace ws
 {
 
 class connection_callback_factory

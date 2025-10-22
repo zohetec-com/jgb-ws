@@ -5,7 +5,7 @@
 
 struct context_f0736a47718c
 {
-    wsobj::sqlite_callback* cb_;
+    ws::sqlite_callback* cb_;
 
     context_f0736a47718c()
         : cb_(nullptr)
@@ -31,7 +31,7 @@ static int create(void* conf)
     c->get("filename", filename);
     if(!filename.empty())
     {
-        ctx->cb_ = new wsobj::sqlite_callback(filename);
+        ctx->cb_ = new ws::sqlite_callback(filename);
         jgb::value* val;
         r = c->get("tables", &val);
         if(!r && val->type_ == jgb::value::data_type::string)
@@ -39,7 +39,7 @@ static int create(void* conf)
             for(int i=0; i<val->len_; i++)
             {
                 jgb_debug("{ i = %d, table = %s }", i, val->str_[i]);
-                wsobj::object_dispatch_callback::get_instance()->install(
+                ws::object_dispatch_callback::get_instance()->install(
                     val->str_[i], ctx->cb_);
             }
         }

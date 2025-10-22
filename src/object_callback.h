@@ -8,7 +8,7 @@
 #include "wsapp.h"
 #include "message.h"
 
-namespace wsobj
+namespace ws
 {
 
 class object_dispatch_callback;

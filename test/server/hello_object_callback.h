@@ -3,10 +3,10 @@
 
 #include "object_callback.h"
 
-class hello_object_callback: public wsobj::object_callback
+class hello_object_callback: public ws::object_callback
 {
 public:
-    int process(wsobj::connection_context&, wsobj::request& req, wsobj::response& resp) override
+    int process(ws::connection_context&, ws::request& req, ws::response& resp) override
     {
         jgb_debug("%s", req.to_string().c_str());
         resp.ok();

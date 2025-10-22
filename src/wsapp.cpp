@@ -199,7 +199,7 @@ static int callback_minimal(struct lws* wsi, enum lws_callback_reasons reason,
         case LWS_CALLBACK_ESTABLISHED:
             {
                 add_live(wsi);
-            connection_callback* cb = wsobj::protocol_dispatch_callback::get_instance()->create(wsi);
+            connection_callback* cb = ws::protocol_dispatch_callback::get_instance()->create(wsi);
                 if(cb)
                 {
                     lws_set_wsi_user(wsi, cb);
@@ -251,13 +251,13 @@ static int tsk_init(void* worker)
 
     jgb_assert(!protocols);
 
-    jgb_debug("factories %d", wsobj::protocol_dispatch_callback::get_instance()->factories_.size());
+    jgb_debug("factories %d", ws::protocol_dispatch_callback::get_instance()->factories_.size());
 
     uint i = 0;
-    if(wsobj::protocol_dispatch_callback::get_instance()->factories_.size() > 0)
+    if(ws::protocol_dispatch_callback::get_instance()->factories_.size() > 0)
     {
-        protocols = new lws_protocols[wsobj::protocol_dispatch_callback::get_instance()->factories_.size() + 1];
-        for(auto it: wsobj::protocol_dispatch_callback::get_instance()->factories_)
+        protocols = new lws_protocols[ws::protocol_dispatch_callback::get_instance()->factories_.size() + 1];
+        for(auto it: ws::protocol_dispatch_callback::get_instance()->factories_)
         {
             protocols[i].name = strdup(it.first.c_str());
             protocols[i].callback = callback_minimal;
@@ -467,7 +467,7 @@ static void tsk_exit(void*)
     to_send_set.clear();
     to_disconnect_set.clear();
     live_set.clear();
-    for(uint i=0; i<wsobj::protocol_dispatch_callback::get_instance()->factories_.size(); i++)
+    for(uint i=0; i<ws::protocol_dispatch_callback::get_instance()->factories_.size(); i++)
     {
         free((void*)protocols[i].name);
     }

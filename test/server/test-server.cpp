@@ -7,9 +7,9 @@
 
 static int init(void*)
 {
-    wsobj::protocol_dispatch_callback::get_instance()->install(
-        "ws-sync", wsobj::object_dispatch_callback::get_instance());
-    wsobj::object_dispatch_callback::get_instance()->install(
+    ws::protocol_dispatch_callback::get_instance()->install(
+        "ws-sync", ws::object_dispatch_callback::get_instance());
+    ws::object_dispatch_callback::get_instance()->install(
         "hello", hello_object_callback::get_instance());
     return 0;
 }

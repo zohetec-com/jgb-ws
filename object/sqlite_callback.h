@@ -3,13 +3,13 @@
 
 #include "object_callback.h"
 
-namespace wsobj
+namespace ws
 {
 
-class sqlite_callback: public wsobj::object_callback
+class sqlite_callback: public ws::object_callback
 {
 public:
-    int process(wsobj::connection_callback& ctx, wsobj::request& req, wsobj::response& resp) override
+    int process(ws::connection_callback& ctx, ws::request& req, ws::response& resp) override
     {
         jgb_mark();
         return 0;

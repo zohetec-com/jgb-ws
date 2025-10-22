@@ -4,7 +4,7 @@
 #include "object_callback.h"
 #include <sqlite3.h>
 
-namespace wsobj
+namespace ws
 {
 
 class sqlite_callback: public object_callback
@@ -75,7 +75,7 @@ public:
 
 private:
 
-    int delete_(wsobj::request& req, wsobj::response& resp)
+    int delete_(ws::request& req, ws::response& resp)
     {
         jgb_mark();
         int r;
@@ -118,7 +118,7 @@ private:
         return 0;
     }
 
-    int create(wsobj::request& req, wsobj::response& resp)
+    int create(ws::request& req, ws::response& resp)
     {
         int r;
         jgb::value* val;
@@ -168,7 +168,7 @@ private:
         return 0;
     }
 
-    int update(wsobj::request& req, wsobj::response& resp)
+    int update(ws::request& req, ws::response& resp)
     {
         int r;
         jgb::value* val;
@@ -240,7 +240,7 @@ private:
         return 0;
     }
 
-    int read(const std::string& table, wsobj::response& resp)
+    int read(const std::string& table, ws::response& resp)
     {
         std::string sql = "SELECT * FROM " + table + ";";
         std::list<jgb::config*> res;
@@ -324,6 +324,6 @@ private:
     }
 };
 
-} // namespace wsobj
+} // namespace ws
 
 #endif // SQLITE_CALLBACK_H

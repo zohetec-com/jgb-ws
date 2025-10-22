@@ -16,7 +16,7 @@ public:
         request_to_send(wsi_);
     }
 
-    void send(wsobj::request& req)
+    void send(ws::request& req)
     {
         std::string str = req.to_string();
         client_callback::send(str);
@@ -26,7 +26,7 @@ public:
     {
         if(sent_)
         {
-            wsobj::request req("places", "read", 0);
+            ws::request req("places", "read", 0);
             send(req);
             sent_ = false;
         }
