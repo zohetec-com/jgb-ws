@@ -89,8 +89,9 @@ int main(int argc, char *argv[])
     const char* key = nullptr;
     jgb_assert(jreq);
     double interval = 1.0;
+    bool loop = false;
 
-    while ((opt = getopt_long(argc, argv, "A::dh:i:I:K:m:O::o:p:t:T:Uv:", long_options, &long_index)) != -1) {
+    while ((opt = getopt_long(argc, argv, "A::dh:i:I:K:lm:O::o:p:t:T:Uv:", long_options, &long_index)) != -1) {
         switch (opt) {
         case 0: // This case is for long options that don't have a short option equivalent
             jgb_debug("{ index = %d, opt = %s }", long_index, long_options[long_index].name);
@@ -101,6 +102,9 @@ int main(int argc, char *argv[])
             break;
         case 'h':
             server = optarg;
+            break;
+        case 'l':
+            loop = true;
             break;
         case 'p':
             port = optarg;
@@ -294,11 +298,9 @@ int main(int argc, char *argv[])
     }
 
     jgb_info("{ interval = %f }", interval);
-    ws_client::interval_ = interval * 1000;
 
-    char* jreq_str = json_dumps(jreq, JSON_COMPACT);
-    jgb_debug("%s", jreq_str);
-    ws_client::req_str_ = jreq_str;
+    char* req_str = json_dumps(jreq, JSON_COMPACT);
+    jgb_debug("%s", req_str);
 
     std::string url = "ws://" + std::string(server) + ":" + std::string(port);
 
@@ -313,6 +315,10 @@ int main(int argc, char *argv[])
     {
         conf->create("protocol", protocol);
         conf->create("url", url);
+        conf->create("interval", interval * 1000);
+        conf->create("loop", loop);
+        conf->create("req", req_str);
+        conf->create("count", 0);
     }
     else
     {
@@ -323,14 +329,25 @@ int main(int argc, char *argv[])
 
     while(!exit_flag)
     {
-        sleep(1);
+        if(!loop)
+        {
+            if(conf->int64("count") > 0)
+            {
+                break;
+            }
+            jgb::sleep(100);
+        }
+        else
+        {
+            sleep(1);
+        }
     }
     stop();
 
     jgb::core::get_instance()->uninstall_all();
 
     json_decref(jreq);
-    free(jreq_str);
+    free(req_str);
 
     return 0;
 }

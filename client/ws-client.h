@@ -26,17 +26,19 @@ public:
     {
         if(sent_)
         {
-            if(!req_)
+            if(loop_ || !count_)
             {
-                if(req_str_)
+                if(!req_)
                 {
-                    req_ = new ws::request((char*)req_str_, strlen(req_str_));
+                    if(req_str_)
+                    {
+                        req_ = new ws::request((char*)req_str_, strlen(req_str_));
+                    }
                 }
-            }
-
-            if(req_)
-            {
-                send(*req_);
+                if(req_)
+                {
+                    send(*req_);
+                }
             }
             sent_ = false;
         }
@@ -45,13 +47,27 @@ public:
     virtual void on_recv(void *in, int len)
     {
         jgb_raw("%.*s\n", len, (char*)in);
+        ws::message msg(in, len);
+        if(msg.is_response())
+        {
+            ++ count_;
+        }
     }
 
     ws_client(jgb::config* conf)
         : client_callback(conf),
+        req_str_(nullptr),
+        interval_(1000),
         sent_(false),
-        req_(nullptr)
+        req_(nullptr),
+        loop_(false),
+        count_(0)
     {
+        conf->get("loop", loop_);
+        conf->get("req", &req_str_);
+        conf->get("interval", interval_);
+        conf->bind("count", &count_);
+        jgb_debug("{ loop = %d, req = %s, interval = %d }", loop_, req_str_ ? req_str_ : "", interval_);
     }
 
     ~ws_client()
@@ -59,12 +75,13 @@ public:
         delete req_;
     }
 
-    static const char* req_str_;
-    static int interval_; // ms
-
 private:
+    const char* req_str_;
+    int interval_; // ms
     bool sent_;
     ws::request* req_;
+    bool loop_;
+    int count_;
 };
 
 #endif // TEST_CLIENT_H

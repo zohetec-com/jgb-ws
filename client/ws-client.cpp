@@ -2,9 +2,6 @@
 #include <jgb/helper.h>
 #include "ws-client.h"
 
-const char* ws_client::req_str_ = nullptr;
-int ws_client::interval_ = 1000;
-
 struct context_24e8546255cf
 {
     ws_client* client;

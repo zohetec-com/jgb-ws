@@ -46,6 +46,12 @@ public:
         return c->to_string();
     }
 
+    bool is_response()
+    {
+        int status;
+        return c->get("status", status) == 0;
+    }
+
     // TODO: rename c
     jgb::config* c;
 };
