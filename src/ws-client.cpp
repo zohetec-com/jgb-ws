@@ -1,6 +1,6 @@
 #include <jgb/core.h>
 #include <jgb/helper.h>
-#include "client_factory.h"
+#include "ws_client_callback_factory.h"
 
 struct context_24e8546255cf
 {
@@ -17,23 +17,20 @@ struct context_24e8546255cf
     }
 };
 
+static int init(void*)
+{
+    client_factory::get_instance()->install("ws-client", ws_client_callback_factory::get_instance());
+    return 0;
+}
+
 static int tsk_init(void* worker)
 {
     jgb::worker* w = (jgb::worker*) worker;
     context_24e8546255cf* ctx = new context_24e8546255cf;
     jgb::config* cfg = w->get_config();
-    std::string type;
-    int r;
-    r = cfg->get("type", type);
-    if(!r)
-    {
-        ctx->client = client_factory::get_instance()->create(type, cfg);
-    }
-    if(!ctx->client)
-    {
-        delete ctx;
-        return JGB_ERR_NOT_FOUND;
-    }
+    std::string type = "ws-client";
+    cfg->get("type", type);
+    ctx->client = client_factory::get_instance()->create(type, cfg);
     w->set_user(ctx);
     jgb_assert(w);
     return 0;
@@ -73,8 +70,8 @@ static jgb_loop_t loop
 jgb_api_t ws_client
 {
     .version = MAKE_API_VERSION(0, 1),
-    .desc = "ws test client",
-    .init = nullptr,
+    .desc = "ws client",
+    .init = init,
     .release = nullptr,
     .create = nullptr,
     .destroy = nullptr,
