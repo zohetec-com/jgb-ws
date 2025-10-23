@@ -1,7 +1,8 @@
 #ifndef WSAPP_H_20250411
 #define WSAPP_H_20250411
 
-#include "connection_callback.h"
+#include <jgb-ws/connection_callback.h>
+#include <string>
 
 typedef struct connect_request
 {

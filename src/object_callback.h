@@ -1,12 +1,11 @@
 #ifndef OBJECT_CALLBACK_H
 #define OBJECT_CALLBACK_H
 
-#include "connection_callback.h"
-#include "protocol_dispatch_callback.h"
+#include <jgb-ws/protocol_dispatch_callback.h>
+#include <jgb-ws/wsapp.h>
+#include <jgb-ws/message.h>
 #include <map>
 #include <list>
-#include "wsapp.h"
-#include "message.h"
 
 namespace ws
 {

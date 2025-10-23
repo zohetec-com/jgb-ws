@@ -1,7 +1,7 @@
 #ifndef CLIENT_FACTORY_H
 #define CLIENT_FACTORY_H
 
-#include "client_callback.h"
+#include <jgb-ws/client_callback.h>
 #include <map>
 
 class client_callback_factory

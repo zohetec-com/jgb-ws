@@ -2,7 +2,7 @@
 #define SERVER_CALLBACK_H
 
 #include <jgb/log.h>
-#include "connection_callback.h"
+#include <jgb-ws/connection_callback.h>
 #include <libwebsockets.h>
 #include <map>
 

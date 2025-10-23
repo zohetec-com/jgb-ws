@@ -4,9 +4,10 @@
 #include <jgb/config.h>
 #include <jgb/log.h>
 #include <jgb/config_factory.h>
+#include <jgb/helper.h>
 #include <string>
-#include "connection_callback.h"
-#include "wsapp.h"
+#include <jgb-ws/connection_callback.h>
+#include <jgb-ws/wsapp.h>
 
 class client_callback: public connection_callback
 {

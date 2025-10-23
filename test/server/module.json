@@ -7,7 +7,7 @@
       "name": [
         "wsapp"
       ],
-      "library":"libws-app.so"
+      "library":"libjgb-ws.so"
     },
     {
       "name": [
