@@ -1,7 +1,4 @@
 add_executable(wscli
-    main.cpp
-    ws-client.cpp
-    wsapp.cpp
-    connection_callback.cpp)
-target_link_libraries(wscli websockets curl jgb-core jansson)
+    main.cpp)
+target_link_libraries(wscli websockets curl ws-app jgb-core jansson)
 install(TARGETS wscli)
