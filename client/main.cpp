@@ -8,6 +8,7 @@
 #include <stack>
 #include "message.h"
 #include "ws-client.h"
+#include "ws_client_callback_factory.h"
 
 extern jgb_api_t wsapp;
 extern jgb_api_t ws_client;
@@ -319,11 +320,15 @@ int main(int argc, char *argv[])
         conf->create("loop", loop);
         conf->create("req", req_str);
         conf->create("count", 0);
+        conf->create("type", "ws_client_callback");
     }
     else
     {
         jgb_assert(0);
     }
+
+    // synthesis
+    client_factory::get_instance()->install("ws_client_callback", ws_client_callback_factory::get_instance());
 
     run();
 

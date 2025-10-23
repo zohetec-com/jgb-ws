@@ -1,10 +1,10 @@
 #include <jgb/core.h>
 #include <jgb/helper.h>
-#include "ws-client.h"
+#include "client_factory.h"
 
 struct context_24e8546255cf
 {
-    ws_client* client;
+    client_callback* client;
 
     context_24e8546255cf()
         : client(nullptr)
@@ -22,7 +22,18 @@ static int tsk_init(void* worker)
     jgb::worker* w = (jgb::worker*) worker;
     context_24e8546255cf* ctx = new context_24e8546255cf;
     jgb::config* cfg = w->get_config();
-    ctx->client = new ws_client(cfg);
+    std::string type;
+    int r;
+    r = cfg->get("type", type);
+    if(!r)
+    {
+        ctx->client = client_factory::get_instance()->create(type, cfg);
+    }
+    if(!ctx->client)
+    {
+        delete ctx;
+        return JGB_ERR_NOT_FOUND;
+    }
     w->set_user(ctx);
     jgb_assert(w);
     return 0;

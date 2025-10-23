@@ -1,11 +1,11 @@
-#ifndef TEST_CLIENT_H
-#define TEST_CLIENT_H
+#ifndef WS_CLIENT_H
+#define WS_CLIENT_H
 
 #include "client_callback.h"
 #include "jgb/helper.h"
 #include "message.h"
 
-class ws_client: public client_callback
+class ws_client_callback: public client_callback
 {
 public:
 
@@ -54,7 +54,7 @@ public:
         }
     }
 
-    ws_client(jgb::config* conf)
+    ws_client_callback(jgb::config* conf)
         : client_callback(conf),
         req_str_(nullptr),
         interval_(1000),
@@ -70,7 +70,7 @@ public:
         jgb_debug("{ loop = %d, req = %s, interval = %d }", loop_, req_str_ ? req_str_ : "", interval_);
     }
 
-    ~ws_client()
+    ~ws_client_callback()
     {
         delete req_;
     }
@@ -84,4 +84,4 @@ private:
     int count_;
 };
 
-#endif // TEST_CLIENT_H
+#endif // WS_CLIENT_H
