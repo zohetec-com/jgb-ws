@@ -13,7 +13,7 @@ public:
     {
         jgb::sleep(1000);
         sent_ = true;
-        request_to_send(wsi_);
+        request_to_send();
     }
 
     void send(ws::request& req)

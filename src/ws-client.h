@@ -1,87 +1,85 @@
-#ifndef WS_CLIENT_H
-#define WS_CLIENT_H
+#ifndef WS_CLIENT_H_20251024
+#define WS_CLIENT_H_20251024
 
+#include <jgb/buffer.h>
 #include "client_callback.h"
-#include "jgb/helper.h"
-#include "message.h"
 
 class ws_client_callback: public client_callback
 {
 public:
 
-    virtual void on_session() override
-    {
-        jgb::sleep(interval_);
-        sent_ = true;
-        request_to_send(wsi_);
-    }
-
-    void send(ws::request& req)
-    {
-        std::string str = req.to_string();
-        client_callback::send(str);
-    }
-
     virtual void on_send() override
     {
-        if(sent_)
+        if(rd_)
         {
-            if(loop_ || !count_)
+            jgb::frame frm;
+            int r;
+            r = rd_->request_frame(&frm, 100);
+            if(!r)
             {
-                if(!req_)
-                {
-                    if(req_str_)
-                    {
-                        req_ = new ws::request((char*)req_str_, strlen(req_str_));
-                    }
-                }
-                if(req_)
-                {
-                    send(*req_);
-                }
+                //jgb_debug("send. { %.*s }", frm.len, frm.buf);
+                connection_callback::send((const char*) frm.buf, frm.len);
+                rd_->release();
             }
-            sent_ = false;
         }
     }
 
-    virtual void on_recv(void *in, int len)
+    virtual void on_recv(void *in, int len) override
     {
-        jgb_raw("%.*s\n", len, (char*)in);
-        ws::message msg(in, len);
-        if(msg.is_response())
+        if(wr_)
         {
-            ++ count_;
+            wr_->put((uint8_t*) in, len);
         }
     }
 
     ws_client_callback(jgb::config* conf)
-        : client_callback(conf),
-        req_str_(nullptr),
-        interval_(1000),
-        sent_(false),
-        req_(nullptr),
-        loop_(false),
-        count_(0)
+        : client_callback(conf)
     {
-        conf->get("loop", loop_);
-        conf->get("req", &req_str_);
-        conf->get("interval", interval_);
-        conf->bind("count", &count_);
-        jgb_debug("{ loop = %d, req = %s, interval = %d }", loop_, req_str_ ? req_str_ : "", interval_);
+        buf_[0] = nullptr;
+        buf_[1] = nullptr;
+        rd_ = nullptr;
+        wr_ = nullptr;
+
+        int r;
+        std::string buf_id;
+        r = conf->get("task/readers/buf_id", buf_id);
+        if(!r)
+        {
+            buf_[0] = jgb::buffer_manager::get_instance()->add_buffer(buf_id);
+            rd_ = buf_[0]->add_reader(true);
+        }
+        r = conf->get("task/writers/buf_id", buf_id);
+        if(!r)
+        {
+            buf_[1] = jgb::buffer_manager::get_instance()->add_buffer(buf_id);
+            int size = 0;
+            r = conf->get("task/writers/buf_size", size);
+            if(!r)
+            {
+                buf_[1]->resize(size);
+            }
+            wr_ = buf_[1]->add_writer();
+        }
     }
 
     ~ws_client_callback()
     {
-        delete req_;
+        if(buf_[0])
+        {
+            buf_[0]->remove_reader(rd_);
+            jgb::buffer_manager::get_instance()->remove_buffer(buf_[0]);
+        }
+        if(buf_[1])
+        {
+            buf_[1]->remove_writer(wr_);
+            jgb::buffer_manager::get_instance()->remove_buffer(buf_[1]);
+        }
     }
 
 private:
-    const char* req_str_;
-    int interval_; // ms
-    bool sent_;
-    ws::request* req_;
-    bool loop_;
-    int count_;
+    jgb::buffer* buf_[2];
+    jgb::reader* rd_;
+    jgb::writer* wr_;
 };
 
-#endif // WS_CLIENT_H
+#endif // WS_CLIENT_H_20251024

@@ -300,6 +300,8 @@ int main(int argc, char *argv[])
 
     char* req_str = json_dumps(jreq, JSON_COMPACT);
     jgb_debug("%s", req_str);
+    ws::request req(req_str, strlen(req_str));
+    std::string req_text = req.to_string();
 
     std::string url = "ws://" + std::string(server) + ":" + std::string(port);
 
@@ -314,10 +316,20 @@ int main(int argc, char *argv[])
     {
         conf->create("protocol", protocol);
         conf->create("url", url);
-        conf->create("interval", interval * 1000);
-        conf->create("loop", loop);
-        conf->create("req", req_str);
-        conf->create("count", 0);
+
+        jgb::config* tsk = new jgb::config;
+        {
+            jgb::config* rd = new jgb::config;
+            rd->create("buf_id", "100");
+            tsk->create("readers", rd);
+
+            jgb::config* wr = new jgb::config;
+            wr->create("buf_id", "101");
+            wr->create("buf_size", 1048576);
+            tsk->create("writers", wr);
+        }
+
+        conf->create("task", tsk);
     }
     else
     {
@@ -326,20 +338,43 @@ int main(int argc, char *argv[])
 
     run();
 
+    // 等待 ws_client 启动。
+    jgb::sleep(100);
+
+    jgb::buffer* buf[2];
+
+    buf[0] = jgb::buffer_manager::get_instance()->add_buffer("100");
+    buf[0]->resize(1024);
+    jgb::writer* wr = buf[0]->add_writer();
+
+    buf[1] = jgb::buffer_manager::get_instance()->add_buffer("101");
+    jgb::reader* rd = buf[1]->add_reader();
+
     while(!exit_flag)
     {
-        if(!loop)
+        // 发送请求
+        r = wr->put((uint8_t*) req_text.c_str(), req_text.length());
+        jgb_assert(!r);
+
+        jgb::frame frm;
+        r = rd->request_frame(&frm, 3000);
+        if(!r)
         {
-            if(conf->int64("count") > 0)
-            {
-                break;
-            }
-            jgb::sleep(100);
+            jgb_raw("%.*s\n", frm.len, frm.buf);
+            rd->release();
         }
         else
         {
-            sleep(1);
+            jgb_warning("response timeout");
         }
+
+        // FIXME! -- 收到的可能不是对应请求的响应，需要做关联处理。
+        if(!loop)
+        {
+            break;
+        }
+
+        jgb::sleep(interval*1000);
     }
     stop();
 
@@ -347,6 +382,12 @@ int main(int argc, char *argv[])
 
     json_decref(jreq);
     free(req_str);
+
+    buf[0]->remove_writer(wr);
+    jgb::buffer_manager::get_instance()->remove_buffer(buf[0]);
+
+    buf[1]->remove_reader(rd);
+    jgb::buffer_manager::get_instance()->remove_buffer(buf[1]);
 
     return 0;
 }

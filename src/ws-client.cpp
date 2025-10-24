@@ -43,6 +43,30 @@ static int tsk_loop(void* worker)
     return ctx->client->process();
 }
 
+static int tsk_send(void* worker)
+{
+    jgb::worker* w = (jgb::worker*) worker;
+    jgb::reader* rd = w->get_reader(0);
+    if(rd)
+    {
+        jgb::frame frm;
+        int r;
+        r = rd->request_frame(&frm, 100);
+        if(!r)
+        {
+            //jgb_debug("got. { %.*s }", frm.len, frm.buf);
+            context_24e8546255cf* ctx = (context_24e8546255cf*) w->get_user();
+            ctx->client->request_to_send();
+            rd->release();
+        }
+        return 0;
+    }
+    else
+    {
+        return JGB_ERR_END;
+    }
+}
+
 static void tsk_exit(void* worker)
 {
     jgb::worker* w = (jgb::worker*) worker;
@@ -58,7 +82,7 @@ static void tsk_exit(void* worker)
     delete ctx;
 }
 
-static loop_ptr_t loops[] = { tsk_loop, nullptr };
+static loop_ptr_t loops[] = { tsk_loop, tsk_send, nullptr };
 
 static jgb_loop_t loop
 {
