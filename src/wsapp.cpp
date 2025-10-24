@@ -199,7 +199,7 @@ static int callback_minimal(struct lws* wsi, enum lws_callback_reasons reason,
         case LWS_CALLBACK_ESTABLISHED:
             {
                 add_live(wsi);
-            connection_callback* cb = ws::protocol_dispatch_callback::get_instance()->create(wsi);
+                connection_callback* cb = ws::protocol_dispatch_callback::get_instance()->create(wsi);
                 if(cb)
                 {
                     lws_set_wsi_user(wsi, cb);
@@ -207,7 +207,8 @@ static int callback_minimal(struct lws* wsi, enum lws_callback_reasons reason,
                 }
                 else
                 {
-                    jgb_assert(0);
+                    // 断开连接。
+                    return -1;
                 }
             }
             break;

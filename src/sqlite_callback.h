@@ -145,16 +145,15 @@ private:
                     switch(pr->value_->type_)
                     {
                         case jgb::value::data_type::string:
-                        vals << "'" << pr->value_->str() << "'";
+                        case jgb::value::data_type::object:
+                        vals << "'" << pr->value_ << "'";
                             break;
                         case jgb::value::data_type::integer:
-                            vals << pr->value_->int64();
-                            break;
                         case jgb::value::data_type::real:
-                            vals << pr->value_->real();
+                            vals << pr->value_;
                             break;
                         default:
-                            jgb_assert(0);
+                            //jgb_assert(0);
                             break;
                     }
                     ++ n;
@@ -198,16 +197,15 @@ private:
                             switch(pr->value_->type_)
                             {
                                 case jgb::value::data_type::string:
-                                os << "'" << pr->value_->str() << "'";
+                                case jgb::value::data_type::object:
+                                os << "'" << pr->value_ << "'";
                                     break;
                                 case jgb::value::data_type::integer:
-                                    os << pr->value_->int64();
-                                    break;
                                 case jgb::value::data_type::real:
-                                    os << pr->value_->real();
+                                    os << pr->value_;
                                     break;
                                 default:
-                                    jgb_assert(0);
+                                    //jgb_assert(0);
                                     break;
                             }
                             ++ n;
