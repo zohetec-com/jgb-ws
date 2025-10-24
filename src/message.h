@@ -90,6 +90,16 @@ public:
         return m;
     }
 
+    void method(const std::string& m)
+    {
+        c->set("method", m);
+    }
+
+    void object(const std::string& o)
+    {
+        c->set("object", o);
+    }
+
     int64_t id()
     {
         int64_t id = 0L;

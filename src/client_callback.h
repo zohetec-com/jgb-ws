@@ -29,7 +29,8 @@ public:
         conf_->create("state", (int) state_);
         conf_->get("protocol", protocol_);
         conf_->get("url", url_);
-        jgb_info("{ url = %s }", url_.c_str());
+        host_ = get_hostname(url_);
+        jgb_info("{ url = %s, host = %s }", url_.c_str(), host_.c_str());
     }
 
     void to_state(state s)
@@ -148,6 +149,7 @@ public:
     std::string protocol_;
     std::string url_;
     bool reconnect_;
+    std::string host_;
 };
 
 #endif // CLIENT_CALLBACK_H

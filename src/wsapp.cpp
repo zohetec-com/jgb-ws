@@ -336,6 +336,30 @@ static void to_ack(std::set<void*>& ack_set)
     }
 }
 
+std::string get_hostname(const std::string& url)
+{
+    CURLU *h = curl_url();
+    char *host = nullptr;
+    int rc = curl_url_set(h, CURLUPART_URL, url.c_str(), CURLU_NON_SUPPORT_SCHEME);
+    if(!rc)
+    {
+        rc = curl_url_get(h, CURLUPART_HOST, &host, 0);
+        if(!rc)
+        {
+            std::string hostname(host);
+            curl_free(host);
+            curl_url_cleanup(h);
+            return hostname;
+        }
+        else
+        {
+            jgb_warning("curl_url_get host failed. { rc = %d, url = %s }", rc, url.c_str());
+        }
+    }
+    curl_url_cleanup(h);
+    return "";
+}
+
 static void to_connect()
 {
     for(auto i:to_connect_set)

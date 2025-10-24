@@ -15,5 +15,6 @@ int request_to_connect(connect_request_t& req);
 void request_to_send(void* wsi);
 void request_to_disconnect(void* wsi);
 int get_peer_address(void* wsi, std::string& address, int port);
+std::string get_hostname(const std::string& url);
 
 #endif // WSAPP_H
