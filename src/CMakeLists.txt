@@ -1,5 +1,6 @@
 add_library(jgb-ws SHARED
     object_callback.cpp
+    protocol-dispatch.cpp
     connection_callback.cpp
     ws-client.cpp
     wsapp.cpp)
