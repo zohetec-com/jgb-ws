@@ -1,13 +1,14 @@
 #ifndef CONNECTION_CALLBACK_H
 #define CONNECTION_CALLBACK_H
 
+#include <libwebsockets.h>
 #include <string>
 #include <inttypes.h>
 
 class connection_callback
 {
 public:
-    connection_callback(struct lws* wsi = nullptr);
+    connection_callback(lws* wsi = nullptr);
     virtual ~connection_callback();
 
     virtual void on_connected() {}
@@ -16,6 +17,8 @@ public:
 
     virtual void on_send() {}
     virtual void on_recv(void */*in*/, int /*len*/) {}
+
+    void request_to_send();
 
     virtual void send(const char* buf, int len);
     virtual void send(const std::string& str);

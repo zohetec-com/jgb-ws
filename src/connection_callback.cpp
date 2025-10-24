@@ -1,6 +1,7 @@
 #include "connection_callback.h"
 #include <jgb/log.h>
 #include <libwebsockets.h>
+#include "wsapp.h"
 
 connection_callback::connection_callback(lws *wsi)
     : wsi_(wsi),
@@ -49,6 +50,7 @@ void connection_callback::send(const char *buf, int len)
         }
     }
     // 发送后自动请求再发送。
+    // 不会死循环：on_send() 里如果没有数据发送就不会调用 send()。
     lws_callback_on_writable(wsi);
 }
 
@@ -69,6 +71,7 @@ void connection_callback::append(void* in, int len)
 
 void connection_callback::recv(void *in, int len)
 {
+    //jgb_debug("{ wsi %p, len = %d, %.*s }", wsi_, len, len, in);
     jgb_assert(wsi_);
     struct lws* wsi = (struct lws*) wsi_;
     bool start = lws_is_first_fragment(wsi);
@@ -113,4 +116,9 @@ void connection_callback::recv(void *in, int len)
             }
         }
     }
+}
+
+void connection_callback::request_to_send()
+{
+    ::request_to_send(wsi_);
 }
