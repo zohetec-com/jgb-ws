@@ -24,20 +24,20 @@ public:
         r = sqlite3_open(filename_.c_str(), &db);
         if (r != SQLITE_OK)
         {
-            jgb_fail("Cannot open database: %s", sqlite3_errmsg(db));
+            jgb_fail("Cannot open database: { file = %s, err = %s }", filename_.c_str(), sqlite3_errmsg(db));
             return JGB_ERR_FAIL;
         }
         char *errMsg = 0;
         r = sqlite3_exec(db, sql.c_str(), 0, 0, &errMsg);
         if (r != SQLITE_OK)
         {
-            jgb_fail("SQL error: %s", errMsg);
+            jgb_fail("{ sql = %s, error: %s }", sql.c_str(), errMsg);
             sqlite3_free(errMsg);
             sqlite3_close(db);
             return JGB_ERR_FAIL;
         }
         sqlite3_close(db);
-        return 0;\
+        return 0;
     }
 
     int process(connection_context&, request& req, response& resp) override
