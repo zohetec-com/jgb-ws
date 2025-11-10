@@ -10,7 +10,7 @@
 
 extern jgb_api_t wsapp;
 extern jgb_api_t ws_client;
-extern int jgb_print_level;
+extern int jgb_log_print_level;
 
 static bool exit_flag = false;
 
@@ -112,7 +112,7 @@ int main(int argc, char *argv[])
             jgb::stod(optarg, interval);
             break;
         case 'v':
-            jgb::stoi(optarg, jgb_print_level);
+            jgb::stoi(optarg, jgb_log_print_level);
             break;
 
         case 'i':

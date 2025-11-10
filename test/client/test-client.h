@@ -16,6 +16,7 @@ public:
         request_to_send();
     }
 
+    using client_callback::send;
     void send(ws::request& req)
     {
         std::string str = req.to_string();
