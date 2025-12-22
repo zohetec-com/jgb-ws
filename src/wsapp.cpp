@@ -414,8 +414,14 @@ static void to_connect()
                                 info.userdata = (void*)i.callback;
                                 info.retry_and_idle_policy = &retry;
                                 struct lws* wsi = lws_client_connect_via_info(&info);
-                                jgb_assert(wsi);
-                                jgb_debug("new client. { wsi = %p }", wsi);
+                                if(wsi)
+                                {
+                                    jgb_debug("new client. { wsi = %p }", wsi);
+                                }
+                                else
+                                {
+                                    i.callback->on_error();
+                                }
                             }
                             else
                             {
