@@ -373,8 +373,6 @@ int main(int argc, char *argv[])
         {
             break;
         }
-
-        jgb::sleep(interval*1000);
     }
     stop();
 
