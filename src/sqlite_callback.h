@@ -145,8 +145,10 @@ private:
                     switch(pr->value_->type_)
                     {
                         case jgb::value::data_type::string:
+                            vals << "'" << pr->value_->str() << "'";
+                            break;
                         case jgb::value::data_type::object:
-                        vals << "'" << pr->value_ << "'";
+                            vals << "'" << pr->value_ << "'";
                             break;
                         case jgb::value::data_type::integer:
                         case jgb::value::data_type::real:
