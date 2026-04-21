@@ -4,6 +4,9 @@
 #include <jgb-ws/client_callback.h>
 #include <map>
 
+namespace ws
+{
+
 class client_callback_factory
 {
 public:
@@ -44,4 +47,5 @@ public:
     std::map<std::string, client_callback_factory*> factories_;
 };
 
+}
 #endif // CLIENT_FACTORY_H

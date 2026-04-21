@@ -9,6 +9,9 @@
 #include <jgb-ws/connection_callback.h>
 #include <jgb-ws/wsapp.h>
 
+namespace ws
+{
+
 class client_callback: public connection_callback
 {
 public:
@@ -22,7 +25,8 @@ public:
     };
 
     client_callback(jgb::config* conf)
-        : state_(state::idle),
+        : connection_callback(nullptr, 0),
+          state_(state::idle),
           conf_(conf),
           reconnect_(true)
     {
@@ -30,7 +34,15 @@ public:
         conf_->get("protocol", protocol_);
         conf_->get("url", url_);
         host_ = get_hostname(url_);
-        jgb_info("{ url = %s, host = %s }", url_.c_str(), host_.c_str());
+
+        int recv_buf_size = 0;
+        conf->get("recv_buf_size", recv_buf_size);
+        if(recv_buf_size > 0)
+        {
+            resize_recv_buffer(recv_buf_size);
+        }
+        jgb_info("{ url = %s, host = %s, recv buf size = %d }",
+                 url_.c_str(), host_.c_str(), recv_buf_size);
     }
 
     void to_state(state s)
@@ -152,4 +164,5 @@ public:
     std::string host_;
 };
 
+}
 #endif // CLIENT_CALLBACK_H

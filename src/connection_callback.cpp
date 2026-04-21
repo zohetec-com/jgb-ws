@@ -3,24 +3,53 @@
 #include <libwebsockets.h>
 #include "wsapp.h"
 
-connection_callback::connection_callback(lws *wsi)
-    : wsi_(wsi),
+namespace ws
+{
+
+connection_callback::connection_callback(lws *wsi, int recv_buf_size)
+    : recv_buf_(nullptr),
+    wsi_(wsi),
     received_(0),
-    print_sent_recv_(false)
+    print_sent_recv_(false),
+    factory_(nullptr),
+    recv_buf_size_(recv_buf_size)
 {
     internal_send_buf_ = (uint8_t*) malloc(LWS_PRE + send_buf_size_);
-    send_buf_ = internal_send_buf_ + LWS_PRE;
-    recv_buf_ = (uint8_t*) malloc(recv_buf_size_);
     jgb_assert(internal_send_buf_);
-    jgb_assert(recv_buf_);
+    send_buf_ = internal_send_buf_ + LWS_PRE;
+
+    if(recv_buf_size_ > 0)
+    {
+        recv_buf_ = (uint8_t*) malloc(recv_buf_size_);
+        jgb_assert(recv_buf_);
+    }
+}
+
+int connection_callback::resize_recv_buffer(int new_size)
+{
+    if(recv_buf_)
+    {
+        jgb_assert(recv_buf_size_ > 0);
+        free(recv_buf_);
+        recv_buf_ = nullptr;
+    }
+    recv_buf_size_ = new_size;
+    if(recv_buf_size_ > 0)
+    {
+        recv_buf_ = (uint8_t*) malloc(recv_buf_size_);
+        jgb_assert(recv_buf_);
+    }
+    return 0;
 }
 
 connection_callback::~connection_callback()
 {
     jgb_assert(internal_send_buf_);
-    jgb_assert(recv_buf_);
     free(internal_send_buf_);
-    free(recv_buf_);
+    if(recv_buf_)
+    {
+        free(recv_buf_);
+    }
 }
 
 void connection_callback::send(const std::string& str)
@@ -28,17 +57,17 @@ void connection_callback::send(const std::string& str)
     send(str.c_str(), str.length());
 }
 
-void connection_callback::send(const char *buf, int len)
+void connection_callback::send(const char *buf, int len, uint32_t protocol)
 {
     jgb_assert(wsi_);
     struct lws* wsi = (struct lws*) wsi_;
     if(len > 0)
     {
-        if(len < send_buf_size_)
+        if(len <= send_buf_size_)
         {
             int n;
             memcpy(send_buf_, buf, len);
-            n = lws_write(wsi, send_buf_, len, LWS_WRITE_TEXT);
+            n = lws_write(wsi, send_buf_, len, (enum lws_write_protocol) protocol);
             if(n != len)
             {
                 jgb_error("lws_write. { len = %d, n = %d }", len, n);
@@ -56,7 +85,7 @@ void connection_callback::send(const char *buf, int len)
 
 void connection_callback::append(void* in, int len)
 {
-    if(len + received_ < recv_buf_size_)
+    if(len + received_ <= recv_buf_size_)
     {
         memcpy(recv_buf_ + received_, in, len);
         received_ += len;
@@ -121,4 +150,6 @@ void connection_callback::recv(void *in, int len)
 void connection_callback::request_to_send()
 {
     ::request_to_send(wsi_);
+}
+
 }

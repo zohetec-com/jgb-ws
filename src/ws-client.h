@@ -4,6 +4,9 @@
 #include <jgb/buffer.h>
 #include "client_callback.h"
 
+namespace ws
+{
+
 class ws_client_callback: public client_callback
 {
 public:
@@ -82,4 +85,5 @@ private:
     jgb::writer* wr_;
 };
 
+}
 #endif // WS_CLIENT_H_20251024

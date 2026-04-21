@@ -8,6 +8,8 @@
 #include <curl/curl.h>
 #include "protocol_dispatch_callback.h"
 
+using namespace ws;
+
 static int callback_minimal(struct lws* wsi, enum lws_callback_reasons reason,
                             void* user, void* in, size_t len);
 
@@ -216,7 +218,7 @@ static int callback_minimal(struct lws* wsi, enum lws_callback_reasons reason,
         case LWS_CALLBACK_CLOSED:
             {
                 connection_callback* cb = (connection_callback*) lws_wsi_user(wsi);
-                delete cb;
+                ws::protocol_dispatch_callback::get_instance()->remove(cb);
                 remove_live(wsi);
             }
             break;

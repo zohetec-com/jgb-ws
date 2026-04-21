@@ -13,6 +13,8 @@ class connection_callback_factory
 {
 public:
     virtual connection_callback* create(struct lws* wsi) = 0;
+    virtual void remove(connection_callback* cb) { delete cb; }
+    virtual void request_to_send() {}
 };
 
 class protocol_dispatch_callback
@@ -29,6 +31,12 @@ public:
         }
         jgb_error("protocol not found.");
         return nullptr;
+    }
+
+    void remove(connection_callback* cb)
+    {
+        // 这样行得通吗？
+        cb->factory_->remove(cb);
     }
 
     int install(const std::string& protocol, connection_callback_factory* factory)

@@ -2,6 +2,8 @@
 #include <jgb/helper.h>
 #include "ws_client_callback_factory.h"
 
+using namespace ws;
+
 struct context_24e8546255cf
 {
     client_callback* client;

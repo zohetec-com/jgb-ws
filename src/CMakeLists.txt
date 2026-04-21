@@ -1,4 +1,5 @@
 add_library(jgb-ws SHARED
+    send_buffer.cpp
     object_callback.cpp
     protocol-dispatch.cpp
     connection_callback.cpp

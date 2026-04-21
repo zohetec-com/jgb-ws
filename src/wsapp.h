@@ -8,7 +8,7 @@ typedef struct connect_request
 {
     std::string protocol;
     std::string url;
-    connection_callback* callback;
+    ws::connection_callback* callback;
 } connect_request_t;
 
 int request_to_connect(connect_request_t& req);

@@ -4,6 +4,9 @@
 #include "client_factory.h"
 #include "ws-client.h"
 
+namespace ws
+{
+
 class ws_client_callback_factory: public client_callback_factory
 {
 public:
@@ -20,4 +23,5 @@ public:
     }
 };
 
+}
 #endif // WS_CLIENT_CALLBACK_FACTORY_H

@@ -5,6 +5,8 @@
 #include "message.h"
 #include <vector>
 
+using namespace ws;
+
 class test_client: public client_callback
 {
 public:

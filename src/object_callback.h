@@ -89,7 +89,7 @@ public:
             }
         }
         ctx.resps_.push_back(resp);
-        request_to_send(ctx.wsi_);
+        ::request_to_send(ctx.wsi_);
         return 0;
     }
 
